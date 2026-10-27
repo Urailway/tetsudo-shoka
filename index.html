@@ -677,7 +677,7 @@ function endGame() {
   const shareBtn = document.getElementById('share-btn');
   shareBtn.onclick = function() {
     const shareText = `【地理狂育】鉄道唱歌チャレンジ\nSCORE: ${score.toLocaleString()} (${rank})\n正解数: ${correctNum}/20問\nタイム: ${timeInSec}s\n\n#TetsudoShokaChallenge \n`;
-    const shareUrl = `https://example.com`;
+    const shareUrl = `https://urailway.github.io/tetsudo-shoka/`;
     const twitterIntent = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
     
     window.open(twitterIntent, '_blank');
