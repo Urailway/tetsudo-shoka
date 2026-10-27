@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【地理狂育】鉄道唱歌チャレンジ</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-sub: #6b7280;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --border-color: #e5e7eb;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg, #0284c7, #10b981);
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lives {
+      color: var(--danger);
+      letter-spacing: 2px;
+    }
+
+    .content-area {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .question-card {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-left: 6px solid var(--primary);
+      border-radius: 12px;
+      padding: 1.25rem;
+      position: relative;
+    }
+
+    .question-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .timer-container {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background: var(--primary);
+      transition: width 0.1s linear, background-color 0.3s;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .option-btn {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      text-align: left;
+      background: #ffffff;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .option-btn:hover {
+      border-color: var(--primary);
+      background-color: #f0f9ff;
+      transform: translateY(-1px);
+    }
+
+    .option-num {
+      background: #e2e8f0;
+      color: #475569;
+      border-radius: 6px;
+      padding: 0.1rem 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .option-btn:hover .option-num {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .option-btn.correct {
+      background: #ecfdf5 !important;
+      border-color: var(--accent) !important;
+      color: #065f46 !important;
+    }
+
+    .option-btn.correct .option-num {
+      background: var(--accent) !important;
+      color: #ffffff !important;
+    }
+
+    .option-btn.wrong {
+      background: #fef2f2 !important;
+      border-color: var(--danger) !important;
+      color: #991b1b !important;
+    }
+
+    .option-btn.wrong .option-num {
+      background: var(--danger) !important;
+      color: #ffffff !important;
+    }
+
+    .screen-center {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .title-icon {
+      font-size: 3rem;
+      margin-bottom: -0.5rem;
+    }
+
+    .btn-main {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.9rem 2rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-main:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-share {
+      background: #000000;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.75rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-share:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
+    }
+
+    .score-board {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .score-title {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .score-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1rem;
+    }
+
+    .stat-box {
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    .stat-val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <h1>鉄道唱歌チャレンジ（仮）</h1>
+    <p>東海道篇（全66番）</p>
+  </header>
+
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen-center">
+    <div class="title-icon">🚃</div>
+    <h2>全20問の連続クイズ</h2>
+    <p style="color: var(--text-sub); font-size: 0.95rem; max-width: 440px; line-height: 1.6;">
+      前半の歌詞を見て、正しい後半の歌詞を選んでください。<br>
+      素早く答えるほどハイスコア！（3回ミスでゲームオーバー）
+    </p>
+    <button class="btn-main" onclick="startGame()">START</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="hidden">
+    <div class="status-bar">
+      <div class="status-item">
+        <span>問題</span>
+        <span id="current-q-num" style="color: var(--primary)">1</span> / 20
+      </div>
+      <div class="status-item">
+        <span>ライフ</span>
+        <span id="lives-display" class="lives">♥♥♥</span>
+      </div>
+      <div class="status-item">
+        <span>スコア</span>
+        <span id="score-display">0</span>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="timer-container">
+        <div id="timer-bar" class="timer-bar"></div>
+      </div>
+
+      <div class="question-card">
+        <div id="question-tag" class="question-tag">第 1 番</div>
+        <div id="question-text" class="question-text">汽笛一声新橋を はや我が汽車は離れたり</div>
+      </div>
+
+      <div id="options-container" class="options-list">
+        <!-- 5択ボタンが動的に挿入されます -->
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="screen-center hidden">
+    <h2 id="result-title">クリア！</h2>
+    
+    <div class="score-board">
+      <div class="score-title">最終スコア</div>
+      <div id="final-score" class="score-value">0</div>
+      
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">正解数</div>
+          <div id="final-correct" class="stat-val">0 / 20</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">合計回答時間</div>
+          <div id="final-time" class="stat-val">0.00 秒</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 0.5rem;">
+      <button id="share-btn" class="btn-share">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        スコアをポストする
+      </button>
+      <button class="btn-main" onclick="startGame()">リトライ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 鉄道唱歌（東海道篇・全66番）完全データ
+const songData = [
+  { num: 1,  first: "汽笛一声新橋を はや我が汽車は離れたり", second: "愛宕の山に入りのこる 月を旅路の友として" },
+  { num: 2,  first: "右は高輪泉岳寺 四十七士の墓どころ", second: "雪は消えても消えのこる 名は千載の後までも" },
+  { num: 3,  first: "窓より近く品川の 台場も見えて波白く", second: "海のあなたにうすがすむ 山は上総か房州か" },
+  { num: 4,  first: "梅に名をえし大森を すぐれば早も川崎の", second: "大師河原は程ちかし 急げや電気の道すぐに" },
+  { num: 5,  first: "鶴見神奈川あとにして ゆけば横浜ステーシヨン", second: "湊を見れば百舟の 煙は空をこがすまで" },
+  { num: 6,  first: "横須賀ゆきは乗替と 呼ばれておるゝ大船の", second: "つぎは鎌倉鶴が岡 源氏の古跡や尋ね見ん" },
+  { num: 7,  first: "八幡宮の石段に 立てる一木の大公杏", second: "別当公暁のかくれしと 歴史にあるは此蔭よ" },
+  { num: 8,  first: "こゝに開きし頼朝が 幕府のあとは何づかたぞ", second: "松風さむく日は暮れて こたへぬ石碑は苔あをし" },
+  { num: 9,  first: "北は円覚建長寺 南は大仏星月夜", second: "片瀬腰越江の島も たゞ半日の道ぞかし" },
+  { num: 10, first: "汽車より逗子をながめつつ はや横須賀に着きにけり", second: "見よやドツクに集まりし わが軍艦の壮大を" },
+  { num: 11, first: "支線をあとに立ちかへり わたる相模の馬入川", second: "海水浴に名を得たる 大磯みえて波すゞし" },
+  { num: 12, first: "国府津おるれば電車あり 酒匂小田原とほからず", second: "箱根八里の山道も あれ見よ雲の間より" },
+  { num: 13, first: "いでゝはくゞるトンネルの 前後はおやま小山駅", second: "今もわすれぬ鉄橋の 下ゆく水のおもしろさ" },
+  { num: 14, first: "はるかにみえし富士の嶺は はや我がそばに来たりたり", second: "雪の冠雲の帯 いつもけだかき姿にて" },
+  { num: 15, first: "こゝぞ御殿場夏ならば われも登山をこゝろみん", second: "高さは一万数千尺 十三州もたゞ一目" },
+  { num: 16, first: "三島は近年ひらけたる 豆相線路のわかれみち", second: "駅にはこの地の名をえたる 官幣大社の宮居あり" },
+  { num: 17, first: "沼津の海に聞えたる 里は牛伏我入道", second: "春は花さく桃のころ 夏はすゞしき海のそば" },
+  { num: 18, first: "鳥の羽音におどろきし 平家の話は昔にて", second: "今は汽車ゆく富士川を 下るは身延の帰り舟" },
+  { num: 19, first: "世に名も高き興津鯛 鐘の音ひびく清見寺", second: "清水につゞく江尻より ゆけば程なき久能山" },
+  { num: 20, first: "三保の松原田子の浦 さかにうつる富士の嶺を", second: "波にながむる舟人は 夏も冬とや思ふらん" },
+  { num: 21, first: "駿州一の大都会 静岡いでゝ阿部川を", second: "わたればこゝぞ宇津の谷の 山きりぬきし洞の道" },
+  { num: 22, first: "鞘より抜けておのづから 草なぎはらひし御剣の", second: "御威は千代に燃ゆる火の 焼津の原はこゝなれや" },
+  { num: 23, first: "春さく花の藤枝も すぎて島田の大井川", second: "むかしは人を肩にのせ わたりし話も夢のあと" },
+  { num: 24, first: "いつしか又も暗となる 世界は夜かトンネルか", second: "小夜の中山夜泣石 問へども知らぬよその空" },
+  { num: 25, first: "掛川袋井中泉 いつしかあとに早なりて", second: "さかまき来る天竜の 川瀬の波に雪ぞちる" },
+  { num: 26, first: "この水上にありと聞く 諏訪の湖水の冬げしき", second: "雪と氷の懸橋を わたるは神か里人か" },
+  { num: 27, first: "琴ひく風の浜松も 菜種に蝶の舞坂も", second: "うしろに走る愉快さを うたふか磯の波のこゑ" },
+  { num: 28, first: "煙を水に横たへて わたる浜名の橋の上", second: "たもと涼しく吹く風に 夏ものこらずなりにけり" },
+  { num: 29, first: "右は入海しづかにて 空には富士の雪しろし", second: "左は遠州洋ちかく 山なす波ぞ砕けちる" },
+  { num: 30, first: "豊橋おりて乗る汽車は これぞ豊川稲荷道", second: "東海道にてすぐれたる 海のながめは蒲郡" },
+  { num: 31, first: "見よや徳川家康の おこりし土地の岡崎を", second: "矢矧の橋に残れるは 藤吉郎のものがたり" },
+  { num: 32, first: "鳴海しぼりの産地なる 鳴海に近い大高を", second: "下りておよそ一里半 ゆけば昔の桶狭間" },
+  { num: 33, first: "めぐみ熱田の御やしろは 三種の神器の一つなる", second: "その草薙の神つるぎ あふげや同胞四千万" },
+  { num: 34, first: "名たかき金の鯱は 名古屋の城の光なり", second: "地震のはなしまだ消えぬ 岐阜の鵜飼も見てゆかん" },
+  { num: 35, first: "父やしなひし養老の 滝は今なほ大垣を", second: "三里へだてゝ流れたり 孝子の名誉ともろともに" },
+  { num: 36, first: "天下の旗は徳川に 帰せしいくさの関が原", second: "草むす屍いまもなほ 吹くか胆吹の山おろし" },
+  { num: 37, first: "山はうしろに立ち去りて 前に来るは琵琶の海", second: "ほとりに沿ひし米原は 北陸道の分岐線" },
+  { num: 38, first: "彦根に立てる井伊の城 草津にひさぐ姥が餅", second: "かはる名所も名物も 旅の徒然のうさはらし" },
+  { num: 39, first: "いよ／＼近く慣れくるは 近江の海の波のいろ", second: "その八景も居ながらに 見てゆく旅の楽しさよ" },
+  { num: 40, first: "瀬田の長橋横に見て ゆけば石山観世音", second: "紫式部が筆のあと のこすはこゝよ月の夜に" },
+  { num: 41, first: "粟津の松にこと問へば 答へがほなる風の声", second: "朝日将軍義仲の ほろびし深田は何づかたぞ" },
+  { num: 42, first: "比良の高嶺は雪ならで 花なす雲にかくれたり", second: "矢走にいそぐ舟の帆も みえてにぎはふ波の上" },
+  { num: 43, first: "堅田におつる雁がねの たえまに響く三井の鐘", second: "夕ぐれさむき唐崎の 松には雨のかゝるらん" },
+  { num: 44, first: "むかしながらの山ざくら におふところや志賀の里", second: "都のあとは知らねども 逢坂山はそのまゝに" },
+  { num: 45, first: "大石良雄が山科の その隠れ家はあともなし", second: "赤き鳥居の神さびて 立つは伏見の稲荷山" },
+  { num: 46, first: "東寺の塔を左にて とまれば七条ステーシヨン", second: "京都々々と呼びたつる 駅夫のこゑも勇ましや" },
+  { num: 47, first: "こゝは桓武のみかどより 千有余年の都の地", second: "今も雲井の空たかく あふぐ清涼紫宸殿" },
+  { num: 48, first: "東に立てる東山 西に聳ゆる嵐山", second: "かれとこれとの麓ゆく 水は加茂川桂川" },
+  { num: 49, first: "祇園清水智恩院 吉田黒谷真如堂", second: "ながれも清き水上に 君がよまもる加茂の宮" },
+  { num: 50, first: "夏は納涼の四条橋 冬は雪見の銀閣寺", second: "桜は春の嵯峨御室 紅葉は秋の高雄山" },
+  { num: 51, first: "琵琶湖を引きて通したる 疏水の工事は南禅寺", second: "岩切り抜きつ舟をやる 知識の進歩も見られたり" },
+  { num: 52, first: "神社仏閣山水の 他に京都の物産は", second: "西陣織の綾錦    友禅染の花もみぢ" },
+  { num: 53, first: "扇おしろい京都紅 また加茂川の鷺しらず", second: "みやげを提げていざ立たん あとに名残は残れども" },
+  { num: 54, first: "山崎おりて淀川を わたる向ふは男山", second: "行幸ありし先帝の かしこきあとぞ忍ばるゝ" },
+  { num: 55, first: "淀の川舟さをさして くだりし旅はむかしにて", second: "またゝくひまに今はゆく 煙たえせぬ陸の道" },
+  { num: 56, first: "おくり迎ふる程もなく 茨木吹田うちすぎて", second: "はや大阪につきにけり 梅田は我をむかへたり" },
+  { num: 57, first: "三府の一に位して 商業繁華の大阪市", second: "豊太閤のきづきたる 城に師団はおかれたり" },
+  { num: 58, first: "こゝぞ昔の難波の津 こゝぞ高津の宮のあと", second: "安治川口に入る舟の 煙は日夜たえまなし" },
+  { num: 59, first: "鳥も翔らぬ大空に かすむ五重の塔の影", second: "仏法最初の寺と聞く 四天王寺はあれかとよ" },
+  { num: 60, first: "大阪いでゝ右左 菜種ならざる畑もなし", second: "神崎川のながれのみ 浅黄にゆくぞ美しき" },
+  { num: 61, first: "神崎よりのりかへて ゆあみにのぼる有馬山", second: "池田伊丹と名にきゝし 酒の産地もとほるなり" },
+  { num: 62, first: "神戸は五港の一つにて あつまる汽船のかず／＼は", second: "亜米利加露西亜支那印度 瀬戸内がよひも交じりたり" },
+  { num: 63, first: "磯にはながめ晴れわたる 和田のみさきを控へつつ", second: "山には絶えず布引の 滝見に人もの上りゆく" },
+  { num: 64, first: "七度うまれて君が代を まもるといひし楠公の", second: "いしぶみ高き湊川 ながれて世々の人ぞ知る" },
+  { num: 65, first: "おもへば夢か時のまに 五十三次のはしりきて", second: "神戸のやどに身をおくも 人に翼の汽車の恩" },
+  { num: 66, first: "明けばさらに乗りかへて 山陽道を進ま適", second: "天気は明日も望あり 柳にかすむ月の影" }
+];
+
+// ゲーム状態
+let currentQuestions = [];
+let currentIndex = 0;
+let lives = 3;
+let score = 0;
+let totalTimeMs = 0;
+let questionStartTime = 0;
+let timerInterval = null;
+const QUESTION_LIMIT_MS = 10000; // 1問あたりの制限時間10秒
+
+// Web Audio API
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  const now = audioCtx.currentTime;
+  if (type === 'correct') {
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(523.25, now); // C5
+    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    osc.start(now);
+    osc.stop(now + 0.4);
+  } else if (type === 'wrong') {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.setValueAtTime(140, now + 0.15);
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+    osc.start(now);
+    osc.stop(now + 0.35);
+  }
+}
+
+// ゲーム開始処理
+function startGame() {
+  lives = 3;
+  score = 0;
+  currentIndex = 0;
+  totalTimeMs = 0;
+
+  // 20問をランダム抽出
+  const shuffled = [...songData].sort(() => Math.random() - 0.5);
+  currentQuestions = shuffled.slice(0, 20);
+
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.remove('hidden');
+
+  updateLivesDisplay();
+  document.getElementById('score-display').textContent = '0';
+
+  loadQuestion();
+}
+
+// 問題読み込み
+function loadQuestion() {
+  if (currentIndex >= currentQuestions.length || lives <= 0) {
+    endGame();
+    return;
+  }
+
+  const q = currentQuestions[currentIndex];
+  document.getElementById('current-q-num').textContent = currentIndex + 1;
+  document.getElementById('question-tag').textContent = `第 ${q.num} 番`;
+  document.getElementById('question-text').textContent = q.first;
+
+  // 選択肢作成 (正解1 + 誤り4)
+  const otherItems = songData.filter(item => item.num !== q.num);
+  const wrongChoices = [...otherItems].sort(() => Math.random() - 0.5).slice(0, 4);
+  const choices = [q, ...wrongChoices].sort(() => Math.random() - 0.5);
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+
+  choices.forEach((choice, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-num">${idx + 1}</span> <span>${choice.second}</span>`;
+    btn.onclick = () => handleAnswer(choice.num === q.num, btn);
+    container.appendChild(btn);
+  });
+
+  // タイマー開始
+  startTimer();
+}
+
+// タイマー処理
+function startTimer() {
+  clearInterval(timerInterval);
+  questionStartTime = Date.now();
+  const bar = document.getElementById('timer-bar');
+  bar.style.width = '100%';
+  bar.style.backgroundColor = 'var(--primary)';
+
+  timerInterval = setInterval(() => {
+    const elapsed = Date.now() - questionStartTime;
+    const remainingRatio = Math.max(0, (QUESTION_LIMIT_MS - elapsed) / QUESTION_LIMIT_MS);
+    
+    // 修正箇所：タイマーバーの幅計算の文字欠損を修正
+    bar.style.width = `${remainingRatio * 100}%`;
+    if (remainingRatio < 0.3) {
+      bar.style.backgroundColor = 'var(--danger)';
+    }
+
+    if (elapsed >= QUESTION_LIMIT_MS) {
+      clearInterval(timerInterval);
+      handleAnswer(false, null); // タイムアウトは誤答扱い
+    }
+  }, 50);
+}
+
+// 回答選択時処理
+function handleAnswer(isCorrect, clickedBtn) {
+  clearInterval(timerInterval);
+  const elapsed = Date.now() - questionStartTime;
+  totalTimeMs += Math.min(elapsed, QUESTION_LIMIT_MS);
+
+  // ボタン無効化
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+  if (isCorrect) {
+    playSound('correct');
+    if (clickedBtn) clickedBtn.classList.add('correct');
+
+    // スコア計算：基本点1000 + 残り時間ボーナス(最大2000点)
+    const timeBonus = Math.max(0, Math.floor((QUESTION_LIMIT_MS - elapsed) * 0.2));
+    const gainedScore = 1000 + timeBonus;
+    score += gainedScore;
+    document.getElementById('score-display').textContent = score.toLocaleString();
+  } else {
+    playSound('wrong');
+    if (clickedBtn) clickedBtn.classList.add('wrong');
+    
+    // 正解を強調表示
+    const q = currentQuestions[currentIndex];
+    buttons.forEach(btn => {
+      if (btn.textContent.includes(q.second)) {
+        btn.classList.add('correct');
+      }
+    });
+
+    lives--;
+    updateLivesDisplay();
+  }
+
+  // 次の問へ
+  setTimeout(() => {
+    if (lives <= 0) {
+      endGame();
+    } else {
+      currentIndex++;
+      loadQuestion();
+    }
+  }, 1200);
+}
+
+// ライフ表示更新
+function updateLivesDisplay() {
+  const hearts = '♥'.repeat(Math.max(0, lives)) + '♡'.repeat(Math.max(0, 3 - lives));
+  document.getElementById('lives-display').textContent = hearts;
+}
+
+// ランク判定
+function getRank(finalScore, correctCount) {
+  if (correctCount === 20 && finalScore > 45000) return "S+ 級（名誉駅長）";
+  if (correctCount === 20) return "S 級（鉄道博士）";
+  if (correctCount >= 16) return "A 級（ベテラン旅行家）";
+  if (correctCount >= 12) return "B 級（一人旅名人）";
+  if (correctCount >= 8)  return "C 級（見習い車掌）";
+  return "D 級（途中下車）";
+}
+
+// ゲーム終了処理
+function endGame() {
+  clearInterval(timerInterval);
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.remove('hidden');
+
+  // 正確な正解数を計算
+  const correctNum = Math.max(0, (currentIndex + (lives > 0 ? 1 : 0)) - (3 - lives));
+  const timeInSec = (totalTimeMs / 1000).toFixed(2);
+  const rank = getRank(score, correctNum);
+
+  document.getElementById('result-title').textContent = lives <= 0 ? 'ゲームオーバー' : '全問クリア！';
+  document.getElementById('final-score').textContent = score.toLocaleString();
+  document.getElementById('final-correct').textContent = `${correctNum} / 20 問`;
+  document.getElementById('final-time').textContent = `${timeInSec} 秒`;
+
+  // --- シェア用の処理 ---
+  const shareBtn = document.getElementById('share-btn');
+  shareBtn.onclick = function() {
+    const shareText = `【地理狂育】鉄道唱歌チャレンジ\nSCORE: ${score.toLocaleString()} (${rank})\n正解数: ${correctNum}/20問\nタイム: ${timeInSec}s\n\n#TetsudoShokaChallenge \n`;
+    const shareUrl = `https://example.com`;
+    const twitterIntent = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    
+    window.open(twitterIntent, '_blank');
+  };
+}
+</script>
+</body>
+</html>
